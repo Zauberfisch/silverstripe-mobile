@@ -64,7 +64,7 @@ class MobileSiteControllerExtension extends Extension {
 					return $this->owner->redirect($config->MobileDomainNormalized, 301);
 				}
 
-				SSViewer::set_theme($config->MobileTheme);
+				Config::inst()->update('SSViewer', 'theme', $config->MobileTheme);
 				self::$is_mobile = true;
 				return;
 			}
@@ -72,13 +72,13 @@ class MobileSiteControllerExtension extends Extension {
 
 		// If the user requested the mobile domain, set the right theme
 		if ($this->onMobileDomain()) {
-			SSViewer::set_theme($config->MobileTheme);
+			Config::inst()->update('SSViewer', 'theme', $config->MobileTheme);
 			self::$is_mobile = true;
 		}
 
 		// User just wants to see a theme, but no redirect occurs
 		if (MobileBrowserDetector::is_mobile() && $config->MobileSiteType == 'MobileThemeOnly') {
-			SSViewer::set_theme($config->MobileTheme);
+			Config::inst()->update('SSViewer', 'theme', $config->MobileTheme);
 			self::$is_mobile = true;
 		}
 
@@ -162,43 +162,43 @@ class MobileSiteControllerExtension extends Extension {
 		return Controller::join_links($this->owner->Link(), '?fullSite=0');
 	}
 
-	/**
-	 * Is the current HTTP_USER_AGENT a known iPhone or iPod Touch
-	 * mobile agent string?
-	 *
-	 * @return boolean
-	 */
-	public function IsiPhone() {
-		return MobileBrowserDetector::is_iphone();
-	}
-
-	/**
-	 * Is the current HTTP_USER_AGENT a known Android mobile
-	 * agent string?
-	 *
-	 * @return boolean
-	 */
-	public function IsAndroid() {
-		return MobileBrowserDetector::is_android();
-	}
-
-	/**
-	 * Is the current HTTP_USER_AGENT a known Opera Mini
-	 * agent string?
-	 *
-	 * @return boolean
-	 */
-	public function IsOperaMini() {
-		return MobileBrowserDetector::is_opera_mini();
-	}
-
-	/**
-	 * Is the current HTTP_USER_AGENT a known Blackberry
-	 * mobile agent string?
-	 *
-	 * @return boolean
-	 */
-	public function IsBlackBerry() {
-		return MobileBrowserDetector::is_blackberry();
-	}
+//	/**
+//	 * Is the current HTTP_USER_AGENT a known iPhone or iPod Touch
+//	 * mobile agent string?
+//	 *
+//	 * @return boolean
+//	 */
+//	public function IsiPhone() {
+//		return MobileBrowserDetector::is_iphone();
+//	}
+//
+//	/**
+//	 * Is the current HTTP_USER_AGENT a known Android mobile
+//	 * agent string?
+//	 *
+//	 * @return boolean
+//	 */
+//	public function IsAndroid() {
+//		return MobileBrowserDetector::is_android();
+//	}
+//
+//	/**
+//	 * Is the current HTTP_USER_AGENT a known Opera Mini
+//	 * agent string?
+//	 *
+//	 * @return boolean
+//	 */
+//	public function IsOperaMini() {
+//		return MobileBrowserDetector::is_opera();
+//	}
+//
+//	/**
+//	 * Is the current HTTP_USER_AGENT a known Blackberry
+//	 * mobile agent string?
+//	 *
+//	 * @return boolean
+//	 */
+//	public function IsBlackBerry() {
+//		return MobileBrowserDetector::is_blackberry();
+//	}
 }
