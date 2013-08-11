@@ -6,11 +6,10 @@
  * @package mobile
  */
 class MobileSiteConfigExtension extends DataExtension {
-
 	/**
 	 * The path the default mobile theme should be copied
 	 * to when {@link SiteConfig} is first created in the database.
-	 * 
+	 *
 	 * @see MobileSiteConfigExtension::requireDefaultRecords()
 	 * @var string
 	 */
@@ -21,7 +20,7 @@ class MobileSiteConfigExtension extends DataExtension {
 	}
 
 	public static function get_theme_copy_path() {
-		if(!self::$theme_copy_path) {
+		if (!self::$theme_copy_path) {
 			return '../' . THEMES_DIR . '/blackcandymobile';
 		} else {
 			return self::$theme_copy_path;
@@ -36,26 +35,23 @@ class MobileSiteConfigExtension extends DataExtension {
 		'MobileDomain' => 'Text',
 		// Comma-separated list of non-mobile domains, without protocol
 		'FullSiteDomain' => 'Text',
-				'MobileTheme' => 'Varchar(255)',
+		'MobileTheme' => 'Varchar(255)',
 		'MobileSiteType' => 'Enum("Disabled,RedirectToDomain,MobileThemeOnly","Disabled")'
 	);
-
-
 	static $defaults = array(
-				'MobileTheme' => 'blackcandymobile',
-				'MobileSiteType' => 'Disabled'
-		);
+		'MobileTheme' => 'blackcandymobile',
+		'MobileSiteType' => 'Disabled'
+	);
 
 	static function add_to_class($class, $extensionClass, $args = null) {
-		if($class == 'SiteConfig') {
+		if ($class == 'SiteConfig') {
 			Config::inst()->update($class, 'defaults', array(
 				'MobileDomain' => 'm.' . $_SERVER['HTTP_HOST'],
 				'FullSiteDomain' => $_SERVER['HTTP_HOST']
 			));
-	}
+		}
 		parent::add_to_class($class, $extensionClass, $args);
 	}
-	
 
 	/**
 	 * @return String The first available domain, with the current protocol prefixed,
@@ -64,8 +60,8 @@ class MobileSiteConfigExtension extends DataExtension {
 	public function getMobileDomainNormalized() {
 		$domains = explode(',', $this->owner->MobileDomain);
 		$domain = array_shift($domains);
-		if(!$domain) return false;
-		if(!parse_url($domain, PHP_URL_SCHEME)) $domain = Director::protocol() . $domain;
+		if (!$domain) return false;
+		if (!parse_url($domain, PHP_URL_SCHEME)) $domain = Director::protocol() . $domain;
 		return $domain;
 	}
 
@@ -76,8 +72,8 @@ class MobileSiteConfigExtension extends DataExtension {
 	public function getFullSiteDomainNormalized() {
 		$domains = explode(',', $this->owner->FullSiteDomain);
 		$domain = array_shift($domains);
-		if(!$domain) return false;
-		if(!parse_url($domain, PHP_URL_SCHEME)) $domain = Director::protocol() . $domain;
+		if (!$domain) return false;
+		if (!parse_url($domain, PHP_URL_SCHEME)) $domain = Director::protocol() . $domain;
 		return $domain;
 	}
 
@@ -88,7 +84,7 @@ class MobileSiteConfigExtension extends DataExtension {
 	public function getMobileSiteType() {
 		$defaults = $this->owner->stat('defaults');
 		$value = $this->owner->getField('MobileSiteType');
-		if(!$value) $value = $defaults['MobileSiteType'];
+		if (!$value) $value = $defaults['MobileSiteType'];
 		return $value;
 	}
 
@@ -113,7 +109,7 @@ class MobileSiteConfigExtension extends DataExtension {
 	public function augmentDatabase() {
 		$defaultThemes = array('blackcandymobile', 'jquerymobile');
 		$currentTheme = $this->owner->getField('MobileTheme');
-		if(!$currentTheme || in_array($currentTheme, $defaultThemes)) {
+		if (!$currentTheme || in_array($currentTheme, $defaultThemes)) {
 			$this->copyDefaultTheme($currentTheme);
 		}
 	}
@@ -122,17 +118,17 @@ class MobileSiteConfigExtension extends DataExtension {
 	 * @param String
 	 */
 	public static function copyDefaultTheme($theme = null) {
-		if(!$theme) $theme = 'blackcandymobile';
+		if (!$theme) $theme = 'blackcandymobile';
 		$src = BASE_PATH . '/' . MOBILE_DIR . '/themes/' . $theme;
-		if(!file_exists($src)) {
+		if (!file_exists($src)) {
 			throw new InvalidArgumentException(sprintf('Theme "%s" not found in path %s', $theme, $src));
 		}
 
 		$dst = self::get_theme_copy_path();
 
-		if(!file_exists($dst)) {
+		if (!file_exists($dst)) {
 			@mkdir($dst);
-			if(is_writable($dst)) {
+			if (is_writable($dst)) {
 				rcopy($src, $dst);
 				DB::alteration_message(
 					sprintf('Default mobile theme "%s" has been copied into the themes directory', $theme),
@@ -167,25 +163,24 @@ class MobileSiteConfigExtension extends DataExtension {
 			)
 		);
 	}
-
 }
 
 /**
  * Copies a directory from source to destination
  * completely by recursively copying each
  * individual file.
- * 
+ *
  * Note: This will ignore ".svn" directories.
- * 
+ *
  * @param string $src Source path
  * @param string $dst Destination path
  */
 function rcopy($src, $dst) {
 	$dir = opendir($src);
 	@mkdir($dst);
-	while(false !== ($file = readdir($dir))) {
-		if(($file != '.') && ($file != '..') && ($file != '.svn')) {
-			if(is_dir($src . '/' . $file)) {
+	while (false !== ($file = readdir($dir))) {
+		if (($file != '.') && ($file != '..') && ($file != '.svn')) {
+			if (is_dir($src . '/' . $file)) {
 				rcopy($src . '/' . $file, $dst . '/' . $file);
 			} else {
 				copy($src . '/' . $file, $dst . '/' . $file);
