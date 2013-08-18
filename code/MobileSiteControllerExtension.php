@@ -45,7 +45,7 @@ class MobileSiteControllerExtension extends Extension {
 			return;
 		}
 
-		// Enforce the site (cookie expires in 30 minutes)
+		// Enforce the site
 		$fullSite = $request->getVar('fullSite');
 
 		if (is_numeric($fullSite)) {
