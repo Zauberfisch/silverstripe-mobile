@@ -7,15 +7,29 @@
  */
 class MobileSiteControllerExtension extends Extension {
 	/**
-	 * The expiration time of a cookie set for full site requests
-	 * from the mobile site. Default is 30 minutes (1800 seconds)
+	 * The expiration time in days of a cookie set for full site requests
+	 * from the mobile site. Default is 1 day
 	 * @var int
 	 */
-	public static $cookie_expire_time = 1800;
+	private static $cookie_expire_time = 1;
 	/**
 	 * Stores state information as to which site is currently served.
 	 */
 	private static $is_mobile = false;
+
+	/**
+	 * @param int $days
+	 */
+	private static function set_cookie_expire_time($days) {
+		static::$cookie_expire_time = $days;
+	}
+
+	/**
+	 * @return int $days
+	 */
+	private static function get_cookie_expire_time() {
+		return static::$cookie_expire_time;
+	}
 
 	/**
 	 * Override the default behavior to ensure that if this is a mobile device
@@ -36,15 +50,14 @@ class MobileSiteControllerExtension extends Extension {
 
 		if (is_numeric($fullSite)) {
 			$fullSiteCookie = (int)$fullSite;
-			Cookie::set('fullSite', $fullSiteCookie);
 
 			// use the host of the desktop version of the site to set cross-(sub)domain cookie
 			$domain = $config->FullSiteDomainNormalized;
 
 			if (!empty($domain)) {
-				Cookie::set('fullSite', $fullSite, time() + self::$cookie_expire_time, null, '.' . parse_url($domain, PHP_URL_HOST));
+				Cookie::set('fullSite', $fullSite, self::get_cookie_expire_time(), null, '.' . parse_url($domain, PHP_URL_HOST));
 			} else { // otherwise just use a normal cookie with the default domain
-				Cookie::set('fullSite', $fullSite, time() + self::$cookie_expire_time);
+				Cookie::set('fullSite', $fullSite, self::get_cookie_expire_time());
 			}
 		} else {
 			$fullSiteCookie = Cookie::get('fullSite');
